@@ -29,3 +29,9 @@ func (k *DummyKeeper) Clean(key string) error {
 	delete(k.memory, key)
 	return nil
 }
+
+func getKeeper() Keeper {
+	return &DummyKeeper{make(map[string]string)}
+}
+
+var keeper = getKeeper()

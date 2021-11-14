@@ -8,7 +8,7 @@ func TestDummyKeeperSet(t *testing.T) {
 	value := "bar"
 	keeper.Set(key, value)
 	if keeper.memory[key] != value {
-		t.Error("bad memory value")
+		t.Error("ERROR: bad memory value")
 	}
 }
 
@@ -19,7 +19,7 @@ func TestDummyKeeperGet(t *testing.T) {
 	keeper.memory[key] = value
 	valueFromGet, _ := keeper.Get(key)
 	if valueFromGet != value {
-		t.Error("bad value from get")
+		t.Error("ERROR: bad value from get")
 	}
 }
 
@@ -31,6 +31,6 @@ func TestDummyKeeperClean(t *testing.T) {
 	keeper.Clean(key)
 	_, ok := keeper.memory[key]
 	if ok {
-		t.Error("clean does not work")
+		t.Error("ERROR: clean does not work")
 	}
 }

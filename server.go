@@ -15,7 +15,7 @@ func indexView(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", nil)
 }
 
-func saveMessageView(c *gin.Context) {
+func saveMessageView(c *gin.Context, keyBuilder KeyBuilder, keeper Keeper) {
 	message := c.PostForm("message")
 	key := keyBuilder.Get()
 	err := keeper.Set(key, message)
@@ -26,7 +26,7 @@ func saveMessageView(c *gin.Context) {
 	c.HTML(http.StatusOK, "key.html", gin.H{"key": fmt.Sprintf("http://%s/%s", c.Request.Host, key)})
 }
 
-func readMessageView(c *gin.Context) {
+func readMessageView(c *gin.Context, keyBuilder KeyBuilder, keeper Keeper) {
 	key := c.Param("key")
 	msg, err := keeper.Get(key)
 	if err != nil {
@@ -46,18 +46,26 @@ func readMessageView(c *gin.Context) {
 	c.HTML(http.StatusOK, "message.html", gin.H{"message": msg})
 }
 
-func getRouter() *gin.Engine {
+func buildHandler(fn func(c *gin.Context, keyBuilder KeyBuilder, keeper Keeper), keyBuilder KeyBuilder, keeper Keeper) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		fn(c, keyBuilder, keeper)
+	}
+}
+
+func getRouter(keyBuilder KeyBuilder, keeper Keeper) *gin.Engine {
 	router := gin.Default()
 	router.LoadHTMLFiles("templates/index.html",
 		"templates/key.html", "templates/message.html",
 		"templates/404.html", "templates/500.html")
 	router.GET("/", indexView)
-	router.GET("/:key", readMessageView)
-	router.POST("/", saveMessageView)
+	router.POST("/", buildHandler(saveMessageView, keyBuilder, keeper))
+	router.GET("/:key", buildHandler(readMessageView, keyBuilder, keeper))
 	return router
 }
 func main() {
-	router := getRouter()
+	keyBuilder := getKeyBuilder()
+	keeper := getKeeper()
+	router := getRouter(keyBuilder, keeper)
 	router.Run("localhost:8080")
 }
 

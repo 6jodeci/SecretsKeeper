@@ -35,5 +35,3 @@ func (k *DummyKeeper) Clean(key string) error {
 func getKeeper() Keeper {
 	return &DummyKeeper{make(map[string]string)}
 }
-
-var keeper = getKeeper()

@@ -2,19 +2,17 @@ package main
 
 const DUMMY_TEST_KEY = "test_key"
 
-type KeyGenerator interface {
+type KeyBuilder interface {
 	Get() string
 }
 
 type DummyKeyBuilder struct {
 }
 
-func (k *DummyKeyBuilder) Get() string {
+func (k DummyKeyBuilder) Get() string {
 	return DUMMY_TEST_KEY
 }
 
-func getKeyBuilder() KeyGenerator {
-	return &DummyKeyBuilder{}
+func getKeyBuilder() KeyBuilder {
+	return DummyKeyBuilder{}
 }
-
-var keyBuilder = getKeyBuilder()

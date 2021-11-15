@@ -7,6 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func writeInternalEror(c *gin.Context) {
+	c.HTML(http.StatusInternalServerError, "500.html", gin.H{})
+}
+
 func indexView(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", nil)
 }
@@ -14,8 +18,11 @@ func indexView(c *gin.Context) {
 func saveMessageView(c *gin.Context) {
 	message := c.PostForm("message")
 	key := keyBuilder.Get()
-	// TODO: handle error
-	keeper.Set(key, message)
+	err := keeper.Set(key, message)
+	if err != nil {
+		writeInternalEror(c)
+		return
+	}
 	c.HTML(http.StatusOK, "key.html", gin.H{"key": fmt.Sprintf("http://%s/%s", c.Request.Host, key)})
 }
 
@@ -27,12 +34,13 @@ func readMessageView(c *gin.Context) {
 			c.HTML(http.StatusNotFound, "404.html", gin.H{})
 			return
 		}
-		c.HTML(http.StatusInternalServerError, "500.html", gin.H{})
+		writeInternalEror(c)
+		return
 	}
 
 	err = keeper.Clean(key)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "500.html", gin.H{})
+		writeInternalEror(c)
 		return
 	}
 	c.HTML(http.StatusOK, "message.html", gin.H{"message": msg})
@@ -54,4 +62,4 @@ func main() {
 }
 
 // GO RUN .
-// TODO TEST 1 57 07
+// TODO 1 15 35

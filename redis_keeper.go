@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -14,7 +15,11 @@ type RedisKeeper struct {
 }
 
 func (k RedisKeeper) Get(key string) (string, error) {
-	return k.cn.Get(k.ctx, key).Result()
+	val, err := k.cn.Get(k.ctx, key).Result()
+	if err == redis.Nil {
+		return "", errors.New(NOT_FOUND_ERROR)
+	}
+	return val, err
 }
 
 func (k RedisKeeper) Set(key string, message string) error {

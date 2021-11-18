@@ -17,8 +17,13 @@ func indexView(c *gin.Context) {
 
 func saveMessageView(c *gin.Context, keyBuilder KeyBuilder, keeper Keeper) {
 	message := c.PostForm("message")
-	key := keyBuilder.Get()
-	err := keeper.Set(key, message)
+	key, err := keyBuilder.Get()
+	if err != nil {
+		writeInternalEror(c)
+		return
+	}
+
+	err = keeper.Set(key, message)
 	if err != nil {
 		writeInternalEror(c)
 		return
@@ -63,11 +68,11 @@ func getRouter(keyBuilder KeyBuilder, keeper Keeper) *gin.Engine {
 	return router
 }
 func main() {
-	keyBuilder := getKeyBuilder()
+	keyBuilder := UUIDKeyBuilder{}
 	keeper := getKeeper()
 	router := getRouter(keyBuilder, keeper)
 	router.Run("localhost:8080")
 }
 
 // GO RUN .
-// TODO 1 15 35
+// TODO 1 37 24

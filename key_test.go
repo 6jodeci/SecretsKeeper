@@ -4,7 +4,8 @@ import "testing"
 
 func TestDummyKeyGenerator(t *testing.T) {
 	dummyKeyBuilder := DummyKeyBuilder{}
-	if dummyKeyBuilder.Get() != DUMMY_TEST_KEY {
+	key, _ := dummyKeyBuilder.Get()
+	if key != DUMMY_TEST_KEY {
 		t.Error("ERROR: bad dummy key")
 	}
 }

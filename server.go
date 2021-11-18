@@ -69,7 +69,7 @@ func getRouter(keyBuilder KeyBuilder, keeper Keeper) *gin.Engine {
 }
 func main() {
 	keyBuilder := UUIDKeyBuilder{}
-	keeper := getKeeper()
+	keeper := getRedisKeeper()
 	router := getRouter(keyBuilder, keeper)
 	router.Run("localhost:8080")
 }
